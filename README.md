@@ -42,7 +42,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+I had the hardest time getting the Api key to work. I also missed the getSize function for the longest time, so that my recycler view didn't display anything for the longest time.
 
 ## Open-source libraries used
 
