@@ -3,6 +3,7 @@ package com.codepath.apps.restclienttemplate;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +28,7 @@ public class TimelineActivity extends AppCompatActivity {
     RecyclerView rvTweets;
     List<Tweet> tweets;
     TweetsAdapter adapter;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,20 @@ public class TimelineActivity extends AppCompatActivity {
         Log.i("foobar","started on create");
 
         client = TwitterApp.getRestClient(this);
+
+        swipeRefreshLayout = findViewById(R.id.swipeContainer);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(TAG, "fetching new data!");
+                populateHomeTimeline();
+            }
+        });
+
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
         //find the recycler view
         rvTweets = findViewById(R.id.rvTweets);
@@ -54,10 +70,9 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.i(TAG, "onSuccess!");
                 JSONArray jsonArray = json.jsonArray;
                 try{
-                    Log.i(TAG, "successsss");
-
-                    tweets.addAll(Tweet.fromJsonArray(jsonArray));
-                    adapter.notifyDataSetChanged();
+                    adapter.clear();
+                    adapter.addAll(Tweet.fromJsonArray(jsonArray));
+                    swipeRefreshLayout.setRefreshing(false);
                 } catch (JSONException e){
                     Log.e(TAG, "failure", e);
                 }
